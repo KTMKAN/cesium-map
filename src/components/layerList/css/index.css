@@ -1,0 +1,63 @@
+.item {
+    border: 3px solid #666;
+    background-color: #ddd;
+    border-radius: .5em;
+    padding: 10px;
+}
+
+.over {
+    border: 3px dotted #666;
+}
+
+.hide {
+    display: none;
+}
+
+.layerList {
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.node-area {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    width: 100%;
+}
+
+.childNodes {
+    margin-left: 5px;
+}
+
+/* default cls */
+.default-node-title-cls {
+    font-size: 1rem;
+    background-color: lightgrey;
+    border-bottom: 1px solid black;
+}
+
+.default-expended-on-btn-cls {
+    background-color: lightgreen;
+    border-radius: 5px;
+}
+
+.default-expended-off-btn-cls {
+    background-color: lightgrey;
+    border-radius: 5px;
+}
+
+.default-visible-on-btn-cls {
+    background-color: lightgreen;
+    border-radius: 10px;
+
+}
+
+.default-visible-off-btn-cls {
+    background-color: lightgrey;
+    border-radius: 10px;
+
+}
+
+/* /default cls */
