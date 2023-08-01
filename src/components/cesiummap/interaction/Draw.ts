@@ -16,7 +16,7 @@ export default class Draw extends Interaction {
     private beforeEntity: Cesium.Entity | null | undefined = null;
 
     constructor(viewer: Cesium.Viewer, drawOption: any) {
-        super(['drawstart', 'drawStop', 'drawend']);
+        super(['drawStart', 'drawStop', 'drawEnd']);
 
         this.viewer = viewer;
         this.drawType = drawOption.drawType;
@@ -134,11 +134,11 @@ export default class Draw extends Interaction {
             const clickPosition = this.viewer?.camera.pickEllipsoid(click.position);
             if (clickPosition == undefined) return;
 
-            const drawstartEvent = {
-                type: 'drawstart',
+            const drawStartEvent = {
+                type: 'drawStart',
                 data: click,
             }
-            this.notify('drawstart', drawstartEvent);
+            this.notify('drawStart', drawStartEvent);
 
             let radius = this.viewer?.camera.position.z;
             if (radius == undefined) return;
@@ -164,8 +164,8 @@ export default class Draw extends Interaction {
             }) as Cesium.Entity;
             this.viewer?.entities.add(entity);
 
-            const drawendEvent = {
-                type: 'drawend',
+            const drawEndEvent = {
+                type: 'drawEnd',
                 data: {
                     entity: entity,
                     geometry: {
@@ -177,7 +177,7 @@ export default class Draw extends Interaction {
                     }
                 }
             };
-            this.notify('drawend', drawendEvent);
+            this.notify('drawEnd', drawEndEvent);
         } catch (error) {
             this.stop();
             console.log('ERROR: Draw.handleLeftClickForDrawPoint() : ', error);
@@ -189,11 +189,11 @@ export default class Draw extends Interaction {
             const clickPosition = this.viewer?.camera.pickEllipsoid(click.position);
             if (clickPosition == undefined) return;
 
-            const drawstartEvent = {
-                type: 'drawstart',
+            const drawStartEvent = {
+                type: 'drawStart',
                 data: click,
             }
-            this.notify('drawstart', drawstartEvent);
+            this.notify('drawStart', drawStartEvent);
 
             const startCarto = Cesium.Ellipsoid.WGS84.cartesianToCartographic(clickPosition);
             const startDegree = {
@@ -256,8 +256,8 @@ export default class Draw extends Interaction {
                     }) as Cesium.Entity;
                     this.viewer?.entities.add(entity);
 
-                    const drawendEvent = {
-                        type: 'drawend',
+                    const drawEndEvent = {
+                        type: 'drawEnd',
                         data: {
                             entity: entity,
                             geometry: {
@@ -268,7 +268,7 @@ export default class Draw extends Interaction {
                             }
                         }
                     };
-                    this.notify('drawend', drawendEvent);
+                    this.notify('drawEnd', drawEndEvent);
 
                     this.degrees = [];
                     this.handleMouseMove = null;
@@ -286,11 +286,11 @@ export default class Draw extends Interaction {
             const clickPosition = this.viewer?.camera.pickEllipsoid(click.position) as Cesium.Cartesian3;
             if (clickPosition == undefined) return;
 
-            const drawstartEvent = {
-                type: 'drawstart',
+            const drawStartEvent = {
+                type: 'drawStart',
                 data: click
             }
-            this.notify('drawstart', drawstartEvent);
+            this.notify('drawStart', drawStartEvent);
 
             const startCarto = Cesium.Ellipsoid.WGS84.cartesianToCartographic(clickPosition);
             const startDegree = {
@@ -346,8 +346,8 @@ export default class Draw extends Interaction {
                     }) as Cesium.Entity;
                     this.viewer?.entities.add(entity);
 
-                    const drawendEvent = {
-                        type: 'drawend',
+                    const drawEndEvent = {
+                        type: 'drawEnd',
                         data: {
                             entity: entity,
                             geometry: {
@@ -359,7 +359,7 @@ export default class Draw extends Interaction {
                             }
                         }
                     }
-                    this.notify('drawend', drawendEvent);
+                    this.notify('drawEnd', drawEndEvent);
 
                     this.handleMouseMove = null;
                     this.handleLeftClick = this.handleLeftClickForDrawCircle;
@@ -376,11 +376,11 @@ export default class Draw extends Interaction {
             const clickPosition = this.viewer?.camera.pickEllipsoid(click.position) as Cesium.Cartesian3;
             if (clickPosition == undefined) return;
 
-            const drawstartEvent = {
-                type: 'drawstart',
+            const drawStartEvent = {
+                type: 'drawStart',
                 data: click
             };
-            this.notify('drawstart', drawstartEvent);
+            this.notify('drawStart', drawStartEvent);
 
             const startCarto = Cesium.Ellipsoid.WGS84.cartesianToCartographic(clickPosition);
             const startDegree = {
@@ -443,8 +443,8 @@ export default class Draw extends Interaction {
                     }) as Cesium.Entity;
                     this.viewer?.entities.add(entity);
 
-                    const drawendEvent = {
-                        type: 'drawend',
+                    const drawEndEvent = {
+                        type: 'drawEnd',
                         data: {
                             entity: entity,
                             geometry: {
@@ -455,7 +455,7 @@ export default class Draw extends Interaction {
                             }
                         }
                     };
-                    this.notify('drawend', drawendEvent);
+                    this.notify('drawEnd', drawEndEvent);
 
                     this.degrees = null;
                     this.handleMouseMove = null;
@@ -474,11 +474,11 @@ export default class Draw extends Interaction {
             if (clickPosition == undefined) return;
 
             if (this.degrees.length == 0) {
-                const drawstartEvent = {
-                    type: 'drawstart',
+                const drawStartEvent = {
+                    type: 'drawStart',
                     data: click
                 };
-                this.notify('drawstart', drawstartEvent);
+                this.notify('drawStart', drawStartEvent);
             }
 
             const startCarto = Cesium.Ellipsoid.WGS84.cartesianToCartographic(clickPosition);
@@ -566,8 +566,8 @@ export default class Draw extends Interaction {
                     }) as Cesium.Entity;
                     this.viewer?.entities.add(entity);
 
-                    const drawendEvent = {
-                        type: 'drawend',
+                    const drawEndEvent = {
+                        type: 'drawEnd',
                         data: {
                             entity: entity,
                             geometry: {
@@ -578,7 +578,7 @@ export default class Draw extends Interaction {
                             }
                         }
                     };
-                    this.notify('drawend', drawendEvent);
+                    this.notify('drawEnd', drawEndEvent);
                     this.degrees = [];
 
                     this.handleMouseMove = null;

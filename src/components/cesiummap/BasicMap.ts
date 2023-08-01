@@ -101,9 +101,9 @@ export default class BasicMap extends Observable {
             fillColorHex: "#FFFFFF",
             lineColorHex: "#FFFFFF",
         });
-        this.draw.on('drawstart', this.handleDrawStart);
-        this.draw.on('drawstop', this.handleDrawStop);
-        this.draw.on('drawend', this.handleDrawEnd);
+        this.draw.on('drawStart', this.handledrawStart);
+        this.draw.on('drawStop', this.handledrawStop);
+        this.draw.on('drawEnd', this.handledrawEnd);
     });
 
     private initSelect = (() => {
@@ -240,15 +240,15 @@ export default class BasicMap extends Observable {
             this.addInteraction(this.select);
     });
 
-    private handleDrawStart = ((event: any) => {
+    private handledrawStart = ((event: any) => {
         console.log(event.type);
     });
 
-    private handleDrawStop = ((event: any) => {
+    private handledrawStop = ((event: any) => {
         console.log(event.type);
     });
 
-    private handleDrawEnd = ((event: any) => {
+    private handledrawEnd = ((event: any) => {
         console.log(event.type);
 
         this.addEntity(event.data.geometry);
