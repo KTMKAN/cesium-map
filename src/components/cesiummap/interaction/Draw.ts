@@ -4,6 +4,8 @@ import Interaction from './Interaction'
 import EntityFactory from '../EntityFactory'
 
 export default class Draw extends Interaction {
+    public static events: string[] = ['drawStart', 'drawStop', 'drawEnd'];
+
     private viewer: Cesium.Viewer | null = null;
     private drawType: string | null = null;
     private fillColor: Cesium.Color | null = null;
@@ -16,7 +18,7 @@ export default class Draw extends Interaction {
     private beforeEntity: Cesium.Entity | null | undefined = null;
 
     constructor(viewer: Cesium.Viewer, drawOption: any) {
-        super(['drawStart', 'drawStop', 'drawEnd']);
+        super(Draw.events);
 
         this.viewer = viewer;
         this.drawType = drawOption.drawType;

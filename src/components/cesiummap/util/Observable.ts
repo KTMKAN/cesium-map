@@ -1,13 +1,14 @@
 
 export default class Observable extends Object {
     private observers: any;
-    protected events: string[];
+    protected events: string[] = ['change', 'input', 'click'];
 
-    constructor(events = ['change', 'input', 'click']) {
+    constructor(events: string[]) {
         super();
         this.observers = {};
 
-        this.events = events;
+        if (events != null) this.events = events;
+
         this.events.forEach(item => {
             this.observers[item] = [];
         })

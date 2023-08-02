@@ -4,13 +4,15 @@ import Observable from './util/Observable';
 import Draggable from './util/Draggable';
 
 export default class Renderer extends Observable {
+    public static events: string[] = ["change"];
+    
     private nodes: any;
     private container: HTMLElement;
     private option: any;
     private key: any;
 
     constructor(nodes: any, container: HTMLElement, renderOption: any, key: any) {
-        super(["change"]);
+        super(Renderer.events);
 
         this.nodes = nodes;
         this.container = container;

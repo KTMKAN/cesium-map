@@ -3,13 +3,15 @@ import * as Cesium from 'cesium';
 import Interaction from './Interaction'
 
 export default class Select extends Interaction {
+    public static events: string[] = ['hover', 'select'];
+
     private viewer: Cesium.Viewer | null = null;
     private nameOverlay: HTMLElement | null = null;
 
     private pickedEntity: Cesium.Entity | null = null;
 
     constructor(viewer: Cesium.Viewer) {
-        super(['hover', 'select']);
+        super(Select.events);
 
         this.viewer = viewer;
 
@@ -20,7 +22,7 @@ export default class Select extends Interaction {
         this.nameOverlay.style.position = "absolute";
         this.nameOverlay.style.bottom = "0";
         this.nameOverlay.style.left = "0";
-        // this.nameOverlay.style"pointer-events"] = "none";
+        // this.nameOverlay.style["pointer-events"] = "none";
         this.nameOverlay.style.padding = "4px";
         this.nameOverlay.style.backgroundColor = "black";
 

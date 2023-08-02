@@ -10,7 +10,12 @@ import Select from './interaction/Select'
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3NDIxNWEzNi1jMjVlLTQ4ZjUtYjY1MS1mNjU4ZTdkM2IyOWYiLCJpZCI6MzM1NzUsImlhdCI6MTU5ODkzNDg1MH0.LEV5sH3jYnHCLFD3e90TjkvieBBjsJf5wQ52FCTlZuk';
 
 export default class BasicMap extends Observable {
-    
+    public static events: string[] = [
+                                        'addNode', 
+                                        ...Draw.events, 
+                                        ...Select.events
+                                    ];
+
     private nodes: any | null = null;
     private container: HTMLElement | null = null;
 
@@ -24,7 +29,7 @@ export default class BasicMap extends Observable {
     private screenSpaceEventHandler: Cesium.ScreenSpaceEventHandler | null = null;
 
     constructor(container: HTMLElement | string, initOption: any) {
-        super(['addNode']);
+        super(BasicMap.events);
 
         if (typeof container == typeof "string") {
             let elm = document.getElementById(container as string);
@@ -96,14 +101,16 @@ export default class BasicMap extends Observable {
     });
 
     private initDraw = (() => {
-        this.draw = new Draw(this.viewer as Cesium.Viewer, {
+        if (this.viewer == null) return;
+
+        this.draw = new Draw(this.viewer, {
             drawType: null,
             fillColorHex: "#FFFFFF",
             lineColorHex: "#FFFFFF",
         });
-        this.draw.on('drawStart', this.handledrawStart);
-        this.draw.on('drawStop', this.handledrawStop);
-        this.draw.on('drawEnd', this.handledrawEnd);
+        this.draw.on('drawStart', this.handleDrawStart);
+        this.draw.on('drawStop', this.handleDrawStop);
+        this.draw.on('drawEnd', this.handleDrawEnd);
     });
 
     private initSelect = (() => {
@@ -203,12 +210,16 @@ export default class BasicMap extends Observable {
     });
 
     public addInteraction(interaction: Interaction) {
-        this.interactions?.push(interaction);
+        if (this.interactions == null) return;
+
+        this.interactions.push(interaction);
         interaction.execute();
     }
 
     public removeInteraction(interaction: Interaction) {
-        const idx = this.interactions?.findIndex((item) => {
+        if (this.interactions == null) return;
+        
+        const idx = this.interactions.findIndex((item) => {
             if (typeof (item) === typeof (interaction)) return true;
             return false;
         })
@@ -222,34 +233,39 @@ export default class BasicMap extends Observable {
         if (this.select != null)
             this.removeInteraction(this.select);
 
-        if (this.draw?.getDrawType() != null) {
-            this.removeInteraction(this.draw as Draw);
+        if (this.draw != null && this.draw.getDrawType() != null) {
+            this.removeInteraction(this.draw);
         }
         this.draw?.setDrawType(drawType);
 
-        if (this.draw?.getDrawType() != null) {
-            this.addInteraction(this.draw as Draw);
+        if (this.draw != null && this.draw.getDrawType() != null) {
+            this.addInteraction(this.draw);
         }
     });
 
     public stopDraw = (() => {
-        this.removeInteraction(this.draw as Draw);
-        this.draw?.setDrawType(null);
+        if (this.draw != null && this.draw.getDrawType() != null) {
+            this.removeInteraction(this.draw);
+            this.draw.setDrawType(null);
+        }
 
         if (this.select != null)
             this.addInteraction(this.select);
     });
 
-    private handledrawStart = ((event: any) => {
+    private handleDrawStart = ((event: any) => {
         console.log(event.type);
+        this.notify('drawStart', event);
     });
 
-    private handledrawStop = ((event: any) => {
+    private handleDrawStop = ((event: any) => {
         console.log(event.type);
+        this.notify('drawStop', event);
     });
 
-    private handledrawEnd = ((event: any) => {
+    private handleDrawEnd = ((event: any) => {
         console.log(event.type);
+        this.notify('drawEnd', event);
 
         this.addEntity(event.data.geometry);
     });
