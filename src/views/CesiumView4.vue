@@ -81,14 +81,6 @@ const data = reactive({
 let layerList: LayerList | null = null;
 let basicMap: BasicMap | null = null;
 
-const MODE = {
-    NONE: "none",
-    DRAW: "draw",
-    SELECT: "select",
-}; Object.freeze(MODE);
-
-let currMode: string = MODE.NONE;
-
 let initLayerList = (() => {
     let container = document.getElementById("layerList");
     if (container == null) return;
@@ -204,8 +196,6 @@ let handleChangeLineColor = ((e: any) => {
 });
 
 onMounted(() => {
-    currMode = MODE.SELECT;
-
     initLayerList();
     initMap();
     initToolBar();
