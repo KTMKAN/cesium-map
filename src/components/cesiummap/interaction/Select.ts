@@ -3,7 +3,7 @@ import * as Cesium from 'cesium';
 import Interaction from './Interaction'
 
 export default class Select extends Interaction {
-    public static events: string[] = ['hover', 'select'];
+    public static events: string[] = ['executeSelect', 'terminateSelect', 'hover', 'select'];
 
     private viewer: Cesium.Viewer | null = null;
     private nameOverlay: HTMLElement | null = null;
@@ -32,11 +32,21 @@ export default class Select extends Interaction {
     public execute = (() => {
         // this.handleMouseMove = this.handleMouseMoveForHover;
         this.handleLeftClick = this.handleLeftClickForSelect;
+
+        const event = {
+            type: 'executeSelect'
+        };
+        this.notify('executeSelect', event);
     });
 
-    public stop = (() => {
+    public terminate = (() => {
         this.handleMouseMove = null;
         this.handleLeftClick = null;
+
+        const event = {
+            type: 'terminateSelect'
+        };
+        this.notify('terminateSelect', event);
     });
 
     private handleMouseMoveForHover = ((event: any) => {
@@ -53,8 +63,13 @@ export default class Select extends Interaction {
 
     private handleLeftClickForSelect = ((event: any) => {
         if (this.viewer == null) return;
+        let pick = this.viewer.scene.pick(event.position);
 
-        this.pickedEntity = this.viewer.scene.pick(event.position).id;
+        this.pickedEntity = null;
+        if (pick != null) {
+            this.pickedEntity = this.viewer.scene.pick(event.position).id;
+        }
+        
         if (!Cesium.defined(this.pickedEntity)) {
             if (this.nameOverlay) this.nameOverlay.style.display = "none";
             return;

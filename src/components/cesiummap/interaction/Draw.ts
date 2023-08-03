@@ -4,7 +4,7 @@ import Interaction from './Interaction'
 import EntityFactory from '../EntityFactory'
 
 export default class Draw extends Interaction {
-    public static events: string[] = ['drawStart', 'drawStop', 'drawEnd'];
+    public static events: string[] = ['executeDraw', 'terminateDraw', 'drawStart', 'drawEnd'];
 
     private viewer: Cesium.Viewer | null = null;
     private drawType: string | null = null;
@@ -50,7 +50,7 @@ export default class Draw extends Interaction {
 
     public execute = (() => {
         if (this.drawType != null) {
-            this.stop();
+            this.terminate();
         }
 
         switch (this.drawType) {
@@ -70,19 +70,27 @@ export default class Draw extends Interaction {
                 this.handleLeftClick = this.handleLeftClickForDrawPoly;
                 break;
         }
+
+        const event = {
+            type: 'executeDraw',
+            data: {
+                drawType: this.drawType
+            }
+        };
+        this.notify('executeDraw', event);
     });
 
-    public stop = (() => {
+    public terminate = (() => {
         this.initDraw();
 
         const event = {
-            type: 'drawStop'
+            type: 'terminateDraw'
         };
-        this.notify('drawStop', event);
+        this.notify('terminateDraw', event);
     });
 
     public setDrawType = ((type: string | null) => {
-        this.stop();
+        this.terminate();
         this.drawType = type;
     });
 
@@ -181,7 +189,7 @@ export default class Draw extends Interaction {
             };
             this.notify('drawEnd', drawEndEvent);
         } catch (error) {
-            this.stop();
+            this.terminate();
             console.log('ERROR: Draw.handleLeftClickForDrawPoint() : ', error);
         }
     });
@@ -278,7 +286,7 @@ export default class Draw extends Interaction {
                 }
             }
         } catch (error) {
-            this.stop();
+            this.terminate();
             console.log('ERROR: Draw.handleLeftClickForDrawLine() : ', error);
         }
     });
@@ -368,7 +376,7 @@ export default class Draw extends Interaction {
                 }
             }
         } catch (error) {
-            this.stop();
+            this.terminate();
             console.log('ERROR: Draw.handleLeftClickForDrawCircle() : ', error);
         }
     });
@@ -465,7 +473,7 @@ export default class Draw extends Interaction {
                 }
             }
         } catch (error) {
-            this.stop();
+            this.terminate();
             console.log('ERROR: Draw.handleLeftClickForDrawRect() : ', error);
         }
     });
@@ -588,7 +596,7 @@ export default class Draw extends Interaction {
                 }
             }
         } catch (error) {
-            this.stop();
+            this.terminate();
             console.log('ERROR: Draw.handleLeftClickForDrawPoly() : ', error);
         }
     });

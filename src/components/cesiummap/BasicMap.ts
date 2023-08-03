@@ -9,12 +9,20 @@ import Select from './interaction/Select'
 
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3NDIxNWEzNi1jMjVlLTQ4ZjUtYjY1MS1mNjU4ZTdkM2IyOWYiLCJpZCI6MzM1NzUsImlhdCI6MTU5ODkzNDg1MH0.LEV5sH3jYnHCLFD3e90TjkvieBBjsJf5wQ52FCTlZuk';
 
+interface MODE_ENUM {
+    [P: string]: string;
+}
 export default class BasicMap extends Observable {
     public static events: string[] = [
                                         'addNode', 
                                         ...Draw.events, 
                                         ...Select.events
                                     ];
+    public static MODE: MODE_ENUM = {
+        NONE: "none",
+        DRAW: "draw",
+        SELECT: "select"
+    };
 
     private nodes: any | null = null;
     private container: HTMLElement | null = null;
@@ -24,6 +32,7 @@ export default class BasicMap extends Observable {
     private interactions: Array<Interaction> | null = null;
     private draw: Draw | null = null;
     private select: Select | null = null;
+    private currMode: string = BasicMap.MODE.NONE;
 
     private viewer: Cesium.Viewer | null = null;
     private screenSpaceEventHandler: Cesium.ScreenSpaceEventHandler | null = null;
@@ -108,8 +117,9 @@ export default class BasicMap extends Observable {
             fillColorHex: "#FFFFFF",
             lineColorHex: "#FFFFFF",
         });
+        this.draw.on('executeDraw', this.handleExecuteDraw);
+        this.draw.on('terminateDraw', this.handleTerminateDraw);
         this.draw.on('drawStart', this.handleDrawStart);
-        this.draw.on('drawStop', this.handleDrawStop);
         this.draw.on('drawEnd', this.handleDrawEnd);
     });
 
@@ -119,10 +129,10 @@ export default class BasicMap extends Observable {
         this.select = new Select(this.viewer);
         this.addInteraction(this.select);
 
-        this.select.on('hover', this.handleSelectHover);
+        this.select.on('hover', this.handleExecuteSelect);
+        this.select.on('select', this.handleTerminateSelect);
+        this.select.on('hover', this.handleHover);
         this.select.on('select', this.handleSelect);
-        this.select.on('start', this.handleSelectStart);
-        this.select.on('stop', this.handleSelectStop);
     });
 
     private notifyForInteractions = ((type: string, event: any) => {
@@ -218,49 +228,70 @@ export default class BasicMap extends Observable {
 
     public removeInteraction(interaction: Interaction) {
         if (this.interactions == null) return;
-        
+
         const idx = this.interactions.findIndex((item) => {
             if (typeof (item) === typeof (interaction)) return true;
             return false;
         })
         if (idx != null && idx >= 0) {
-            if (this.interactions) this.interactions[idx].stop();
+            if (this.interactions) this.interactions[idx].terminate();
             this.interactions?.splice(idx, 1);
         }
     }
 
-    public startDraw = ((drawType: string | null) => {
-        if (this.select != null)
-            this.removeInteraction(this.select);
+    public changeMode(mode: string, data: any = {}) {
+        if (mode == null) return;
+        let md = Object.keys(BasicMap.MODE).find((key: string) => BasicMap.MODE[key] == mode);
+        if (md == null) return;
+        let bfrMode = this.currMode;
 
-        if (this.draw != null && this.draw.getDrawType() != null) {
-            this.removeInteraction(this.draw);
+        switch(bfrMode) {
+            case BasicMap.MODE.DRAW:
+                if (this.draw != null && this.draw.getDrawType() != null) {
+                    this.removeInteraction(this.draw);
+                    this.draw.setDrawType(null);
+                }
+                break;
+            case BasicMap.MODE.SELECT:
+                if (this.select != null) {
+                    this.removeInteraction(this.select);
+                }
+                break;
         }
-        this.draw?.setDrawType(drawType);
 
-        if (this.draw != null && this.draw.getDrawType() != null) {
-            this.addInteraction(this.draw);
+        this.currMode = mode;
+        switch(this.currMode) {
+            case BasicMap.MODE.DRAW:
+                if (this.draw != null && this.draw.getDrawType() != null) {
+                    this.removeInteraction(this.draw);
+                }
+                this.draw?.setDrawType(data.drawType);
+        
+                if (this.draw != null && this.draw.getDrawType() != null) {
+                    this.addInteraction(this.draw);
+                }
+                break;
+            case BasicMap.MODE.SELECT:
+                if (this.select != null) {
+                    this.addInteraction(this.select);
+                }
+                break;
         }
+    }
+
+    private handleExecuteDraw = ((event: any) => {
+        console.log(event.type);
+        this.notify('executeDraw', event);
     });
 
-    public stopDraw = (() => {
-        if (this.draw != null && this.draw.getDrawType() != null) {
-            this.removeInteraction(this.draw);
-            this.draw.setDrawType(null);
-        }
-
-        if (this.select != null)
-            this.addInteraction(this.select);
+    private handleTerminateDraw = ((event: any) => {
+        console.log(event.type);
+        this.notify('terminateDraw', event);
     });
 
     private handleDrawStart = ((event: any) => {
         console.log(event.type);
         this.notify('drawStart', event);
-    });
-
-    private handleDrawStop = ((event: any) => {
-        console.log(event.type);
-        this.notify('drawStop', event);
     });
 
     private handleDrawEnd = ((event: any) => {
@@ -270,8 +301,22 @@ export default class BasicMap extends Observable {
         this.addEntity(event.data.geometry);
     });
 
-    private handleSelectHover = () => { };
-    private handleSelect = () => { };
-    private handleSelectStart = () => { };
-    private handleSelectStop = () => { };
+    private handleExecuteSelect = ((event: any) => {
+        console.log(event.type);
+        this.notify('executeSelect', event);
+    });
+
+    private handleTerminateSelect = ((event: any) => {
+        console.log(event.type);
+        this.notify('terminateSelect', event);
+    });
+
+    private handleHover = ((event: any) => {
+        console.log(event.type);
+        this.notify('hover', event);
+    });
+    private handleSelect = ((event: any) => {
+        console.log(event.type);
+        this.notify('select', event);
+    });
 }

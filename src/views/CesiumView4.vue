@@ -172,11 +172,11 @@ let handleClickToolbar = ((e: any, type: string) => {
         if (beforeToolBtn?.classList.contains('tool-selected'))
             beforeToolBtn?.classList.remove('tool-selected');
 
-        basicMap?.stopDraw();
+        basicMap?.changeMode(BasicMap.MODE.SELECT);
     }
 
     if (type != 'none' && beforeDrawType != type) {
-        basicMap?.startDraw(type);
+        basicMap?.changeMode(BasicMap.MODE.DRAW, { drawType: type });
         let fillColorPickerElm = document.getElementById("fillColorPicker") as HTMLInputElement
         basicMap?.setDrawFillColor(fillColorPickerElm.value);
         let lineColorPickerElm = document.getElementById("lineColorPicker") as HTMLInputElement

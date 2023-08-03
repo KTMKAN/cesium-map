@@ -45,5 +45,5 @@ export default class Interaction extends Observable {
     public handleMouseMove: Function | null = null;
 
     public execute: Function = () => { };
-    public stop: Function = () => { };
+    public terminate: Function = () => { };
 }
